@@ -10,7 +10,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Development-only key. Never use this in production.
-SECRET_KEY = "django-insecure-XV6Uwvpnh5HKmZFxi9_XLz36p34GhCW8jfonnpQOmfmb23RyoiNJLascTy45bcHp914"
+SECRET_KEY = "django-insecure-example-key-XV6Uwvpnh5HKmZFxi9_XLz36p34GhCW8jfon"
 
 DEBUG = True
 
@@ -67,7 +67,9 @@ DATABASES = {
 }
 
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"  # noqa: E501
+    },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},

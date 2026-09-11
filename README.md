@@ -24,6 +24,20 @@ Then open <http://127.0.0.1:8000/>.
 
 Run the tests with `python manage.py test`.
 
+## Linting
+
+The project uses [Ruff](https://docs.astral.sh/ruff/) for linting and
+formatting, configured in `pyproject.toml`.
+
+```sh
+pip install -r requirements-dev.txt
+ruff check .          # lint (add --fix to auto-fix)
+ruff format .         # format
+```
+
+The GitHub Actions workflow in `.github/workflows/tests.yml` runs both Ruff
+and the test suite on every push and pull request.
+
 ## How django-file-form is wired in
 
 1. **`example_project/settings.py`**: add `django_file_form` to

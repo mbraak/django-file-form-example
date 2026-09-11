@@ -1,0 +1,25 @@
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+exclude = ["uploads/migrations"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+    "DJ",  # flake8-django
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["example_project", "uploads"]
+section-order = ["future", "standard-library", "third-party", "django", "first-party", "local-folder"]
+
+[tool.ruff.lint.isort.sections]
+django = ["django", "django_file_form"]
+
+[tool.ruff.format]
+quote-style = "double"

@@ -18,7 +18,9 @@ from .models import Document
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(prefix="dff-example-test-")
 
 
-def tus_upload(client: Client, form_id: str, field_name: str, filename: str, content: bytes):
+def tus_upload(
+    client: Client, form_id: str, field_name: str, filename: str, content: bytes
+):
     """Upload ``content`` via the tus protocol, as the JavaScript widget does."""
 
     def b64(value: str) -> str:
@@ -135,4 +137,6 @@ class TusFlowTests(TestCase):
         response = self.client.post(reverse("document_create"), {"title": "No file"})
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Document.objects.exists())
-        self.assertFormError(response.context["form"], "main_file", "This field is required.")
+        self.assertFormError(
+            response.context["form"], "main_file", "This field is required."
+        )
