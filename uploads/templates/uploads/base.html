@@ -1,0 +1,37 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}django-file-form example{% endblock %}</title>
+    {# django-file-form assets, served by the staticfiles app #}
+    <link rel="stylesheet" href="{% static 'file_form/file_form.css' %}">
+    <script src="{% static 'file_form/file_form.js' %}"></script>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 42rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
+        nav a { margin-right: 1rem; }
+        .messages { list-style: none; padding: 0; }
+        .messages li { background: #e6f4ea; border: 1px solid #b7dfc2; padding: .5rem .75rem; border-radius: 4px; }
+        .errorlist { color: #b00020; }
+        label { display: block; font-weight: 600; margin-top: 1rem; }
+        .helptext { display: block; color: #666; font-size: .9em; }
+        button { margin-top: 1.5rem; padding: .5rem 1rem; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'document_list' %}">Documents</a>
+        <a href="{% url 'document_create' %}">New document (ModelForm)</a>
+        <a href="{% url 'simple_upload' %}">Simple form</a>
+        <a href="/admin/">Admin</a>
+    </nav>
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,12 @@
+{% extends "uploads/base.html" %}
+
+{% block title %}New document · django-file-form example{% endblock %}
+
+{% block content %}
+    <h1>New document</h1>
+    <p>
+        A <code>ModelForm</code>. The main file is saved on the
+        <code>Document</code>, each extra file becomes an <code>Attachment</code>.
+    </p>
+    {% include "uploads/_upload_form.html" with form_id="document-form" submit_label="Save document" %}
+{% endblock %}

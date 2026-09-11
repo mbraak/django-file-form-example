@@ -1,0 +1,23 @@
+{# Shared markup for a form that contains django-file-form fields. #}
+<form id="{{ form_id }}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_div }}
+    <button type="submit">{{ submit_label|default:"Submit" }}</button>
+</form>
+
+<script>
+    // Turns the file inputs into drag & drop upload areas that upload to
+    // /upload/ (tus) as soon as a file is chosen. Without this the form still
+    // works as a regular multipart form.
+    initUploadFields(document.getElementById("{{ form_id }}"), {
+        // Optional callbacks, see the django-file-form README for the full list.
+        callbacks: {
+            onSuccess: function (upload) {
+                console.log("Uploaded", upload.name);
+            },
+            onError: function (error, upload) {
+                console.error("Upload failed", upload && upload.name, error);
+            }
+        }
+    });
+</script>

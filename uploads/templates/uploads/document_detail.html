@@ -1,0 +1,20 @@
+{% extends "uploads/base.html" %}
+
+{% block title %}{{ object.title }} · django-file-form example{% endblock %}
+
+{% block content %}
+    <h1>{{ object.title }}</h1>
+    <p>Main file: <a href="{{ object.main_file.url }}">{{ object.main_file.name }}</a></p>
+
+    <h2>Attachments</h2>
+    {% if object.attachments.exists %}
+        <ul>
+            {% for attachment in object.attachments.all %}
+                <li><a href="{{ attachment.file.url }}">{{ attachment.file.name }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>None.</p>
+    {% endif %}
+    <p><a href="{% url 'document_list' %}">Back to list</a></p>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "uploads/base.html" %}
+
+{% block title %}Simple form · django-file-form example{% endblock %}
+
+{% block content %}
+    <h1>Simple form</h1>
+    <p>
+        A plain <code>forms.Form</code> with an <code>UploadedFileField</code> and a
+        <code>MultipleUploadedFileField</code>. Nothing is stored; the view reports
+        what it received.
+    </p>
+    {% include "uploads/_upload_form.html" with form_id="simple-form" submit_label="Upload" %}
+{% endblock %}

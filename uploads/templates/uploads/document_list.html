@@ -1,0 +1,17 @@
+{% extends "uploads/base.html" %}
+
+{% block content %}
+    <h1>Documents</h1>
+    {% if object_list %}
+        <ul>
+            {% for document in object_list %}
+                <li>
+                    <a href="{% url 'document_detail' document.pk %}">{{ document.title }}</a>
+                    ({{ document.attachments.count }} attachment{{ document.attachments.count|pluralize }})
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No documents yet. <a href="{% url 'document_create' %}">Create one</a>.</p>
+    {% endif %}
+{% endblock %}

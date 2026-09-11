@@ -1,0 +1,2 @@
+Django>=6.1,<7
+django-file-form>=5.0,<6
