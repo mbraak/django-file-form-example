@@ -20,6 +20,7 @@ Then open <http://127.0.0.1:8000/>.
 | `/simple/`        | Plain `forms.Form` with a single and a multiple upload field |
 | `/documents/new/` | `ModelForm` that saves a `Document` plus `Attachment` rows   |
 | `/`               | List of saved documents                                      |
+| `/accessibility/` | Demo of the keyboard and screen reader support               |
 | `/admin/`         | Django admin (`manage.py createsuperuser` first)             |
 
 Run the tests with `python manage.py test`.

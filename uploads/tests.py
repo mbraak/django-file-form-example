@@ -68,7 +68,12 @@ class TusFlowTests(TestCase):
         shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
 
     def test_pages_render(self):
-        for name in ["document_list", "document_create", "simple_upload"]:
+        for name in [
+            "document_list",
+            "document_create",
+            "simple_upload",
+            "accessibility",
+        ]:
             with self.subTest(name=name):
                 response = self.client.get(reverse(name))
                 self.assertEqual(response.status_code, 200)
@@ -140,3 +145,16 @@ class TusFlowTests(TestCase):
         self.assertFormError(
             response.context["form"], "main_file", "This field is required."
         )
+
+    def test_accessibility_demo_without_javascript(self):
+        response = self.client.post(
+            reverse("accessibility"),
+            {
+                "documents": [
+                    SimpleUploadedFile("a.txt", b"a"),
+                    SimpleUploadedFile("b.txt", b"b"),
+                ]
+            },
+            follow=True,
+        )
+        self.assertContains(response, "Received files: a.txt, b.txt")
