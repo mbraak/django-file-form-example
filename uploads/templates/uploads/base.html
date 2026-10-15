@@ -15,14 +15,16 @@
         .errorlist { color: #b00020; }
         label { display: block; font-weight: 600; margin-top: 1rem; }
         .helptext { display: block; color: #666; font-size: .9em; }
-        button { margin-top: 1.5rem; padding: .5rem 1rem; }
+        button[type="submit"] { margin-top: 1.5rem; padding: .5rem 1rem; }
     </style>
+    {% block head %}{% endblock %}
 </head>
 <body>
     <nav>
         <a href="{% url 'document_list' %}">Documents</a>
         <a href="{% url 'document_create' %}">New document (ModelForm)</a>
         <a href="{% url 'simple_upload' %}">Simple form</a>
+        <a href="{% url 'accessibility' %}">Accessibility</a>
         <a href="/admin/">Admin</a>
     </nav>
 

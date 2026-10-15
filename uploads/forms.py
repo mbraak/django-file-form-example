@@ -65,3 +65,12 @@ class DocumentForm(FileFormMixin, forms.ModelForm):
             self.delete_temporary_files()
 
         return document
+
+
+class AccessibilityDemoForm(FileFormMixin, forms.Form):
+    documents = MultipleUploadedFileField(help_text="One or more files.")
+
+    def save(self):
+        names = [f.name for f in self.cleaned_data["documents"]]
+        self.delete_temporary_files()
+        return names

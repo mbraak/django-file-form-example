@@ -1,0 +1,166 @@
+{% extends "uploads/base.html" %}
+
+{% block title %}Accessibility · django-file-form example{% endblock %}
+
+{% block head %}
+    <style>
+        .sr-view { margin-top: 2rem; border: 1px solid #ccc; border-radius: 4px; padding: .5rem .75rem; }
+        .sr-view h2 { font-size: 1rem; margin: 0 0 .5rem; }
+        .sr-log { list-style: none; margin: 0; padding: 0; max-height: 20rem; overflow-y: auto; font: .85rem/1.4 ui-monospace, monospace; }
+        .sr-log li { padding: .25rem 0; border-top: 1px solid #eee; }
+        .sr-kind { display: inline-block; min-width: 5.5em; font-weight: 600; }
+        .sr-kind-focus { color: #1a5fb4; }
+        .sr-kind-status { color: #26722e; }
+        .sr-kind-alert { color: #b00020; }
+        .sr-detail { display: block; margin-left: 5.5em; color: #555; }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>Accessibility</h1>
+
+    <form id="accessibility-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_div }}
+        <button type="submit">Upload</button>
+    </form>
+
+    <p><output id="clicked-file"></output></p>
+
+    {# Only for sighted users; hidden so a screen reader does not read it twice #}
+    <section class="sr-view" aria-hidden="true">
+        <h2>Screen reader view (approximation)</h2>
+        <ol class="sr-log" id="sr-log"></ol>
+    </section>
+
+    <script>
+        // With an onClick callback the filenames of uploaded files are buttons.
+        initUploadFields(document.getElementById("accessibility-form"), {
+            callbacks: {
+                onClick: function ({ fileName }) {
+                    document.getElementById("clicked-file").textContent =
+                        "Clicked " + fileName;
+                }
+            }
+        });
+    </script>
+
+    <script type="module">
+        // Logs what a screen reader would get: the role, name, description and
+        // states of the focused element, and the text of live regions when it
+        // changes. Computed in the page, so real screen readers word it differently.
+        import {
+            computeAccessibleDescription,
+            computeAccessibleName,
+            getRole
+        } from "https://cdn.jsdelivr.net/npm/dom-accessibility-api@0.7.0/+esm";
+
+        const log = document.getElementById("sr-log");
+        const panel = log.closest(".sr-view");
+        const liveRegions = '[role="status"], [role="alert"], output';
+
+        function addEntry(kind, text, detail) {
+            const li = document.createElement("li");
+            const kindSpan = document.createElement("span");
+            kindSpan.className = `sr-kind sr-kind-${kind}`;
+            kindSpan.textContent = kind;
+            li.append(kindSpan, text);
+
+            if (detail) {
+                const detailSpan = document.createElement("span");
+                detailSpan.className = "sr-detail";
+                detailSpan.textContent = detail;
+                li.append(detailSpan);
+            }
+
+            log.append(li);
+            while (log.children.length > 50) {
+                log.firstElementChild.remove();
+            }
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function roleOf(el) {
+            return (
+                getRole(el) ??
+                (el.matches('input[type="file"]') ? "file input" : el.localName)
+            );
+        }
+
+        function statesOf(el) {
+            const states = [];
+
+            if (el.getAttribute("aria-invalid") === "true") {
+                states.push("invalid");
+            }
+            if (el.required || el.getAttribute("aria-required") === "true") {
+                states.push("required");
+            }
+            if (el.disabled) {
+                states.push("disabled");
+            }
+
+            return states;
+        }
+
+        // Screen readers mention the list and the position in it
+        function listContextOf(el) {
+            const item = el.closest('[role="listitem"]');
+            const list = item?.closest('[role="list"]');
+
+            if (!list) {
+                return null;
+            }
+
+            const items = [...list.querySelectorAll('[role="listitem"]')];
+            const position = items.indexOf(item) + 1;
+
+            return `in list "${computeAccessibleName(list)}", item ${position} of ${items.length}`;
+        }
+
+        document.addEventListener("focusin", (e) => {
+            const el = e.target;
+            const name = computeAccessibleName(el);
+            const parts = [roleOf(el), name ? `"${name}"` : "(no name)", ...statesOf(el)];
+            const details = [listContextOf(el), computeAccessibleDescription(el)];
+
+            addEntry("focus", parts.join(", "), details.filter(Boolean).join("; "));
+        });
+
+        // The focus is lost when the focused element is removed from the page
+        document.addEventListener("focusout", (e) => {
+            if (e.relatedTarget) {
+                return;
+            }
+
+            setTimeout(() => {
+                if (document.hasFocus() && document.activeElement === document.body) {
+                    addEntry("focus", "(lost, back at the start of the page)");
+                }
+            });
+        });
+
+        new MutationObserver((mutations) => {
+            const changed = new Set();
+
+            for (const mutation of mutations) {
+                const node = mutation.target;
+                const el = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+                const region = el?.closest(liveRegions);
+
+                if (region && !panel.contains(region)) {
+                    changed.add(region);
+                }
+            }
+
+            for (const region of changed) {
+                const text = region.textContent.trim();
+
+                if (text) {
+                    const kind = region.getAttribute("role") === "alert" ? "alert" : "status";
+                    addEntry(kind, text);
+                }
+            }
+        }).observe(document.body, { characterData: true, childList: true, subtree: true });
+    </script>
+{% endblock %}

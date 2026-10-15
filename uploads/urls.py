@@ -11,4 +11,9 @@ urlpatterns = [
         name="document_detail",
     ),
     path("simple/", views.SimpleUploadView.as_view(), name="simple_upload"),
+    path(
+        "accessibility/",
+        views.AccessibilityDemoView.as_view(),
+        name="accessibility",
+    ),
 ]

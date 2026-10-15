@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, FormView, ListView
 
-from .forms import DocumentForm, SimpleUploadForm
+from .forms import AccessibilityDemoForm, DocumentForm, SimpleUploadForm
 from .models import Document
 
 
@@ -36,3 +36,14 @@ class DocumentListView(ListView):
 class DocumentDetailView(DetailView):
     model = Document
     template_name = "uploads/document_detail.html"
+
+
+class AccessibilityDemoView(FormView):
+    template_name = "uploads/accessibility.html"
+    form_class = AccessibilityDemoForm
+    success_url = reverse_lazy("accessibility")
+
+    def form_valid(self, form):
+        names = form.save()
+        messages.success(self.request, f"Received files: {', '.join(names)}")
+        return super().form_valid(form)
