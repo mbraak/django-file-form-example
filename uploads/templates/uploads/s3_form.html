@@ -1,0 +1,13 @@
+{% extends "uploads/base.html" %}
+
+{% block title %}S3 upload · django-file-form example{% endblock %}
+
+{% block content %}
+    <h1>Upload to S3</h1>
+    <p>
+        The form sets <code>s3_upload_dir</code>, so the browser uploads each file
+        straight to the S3 bucket in parts, using URLs that Django signs at
+        <code>/s3upload/</code>. The file data never passes through Django.
+    </p>
+    {% include "uploads/_upload_form.html" with form_id="s3-form" submit_label="Upload" %}
+{% endblock %}

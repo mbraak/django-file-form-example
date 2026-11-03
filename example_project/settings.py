@@ -5,6 +5,7 @@ Only the settings relevant to django-file-form are commented; the rest is the
 standard Django scaffold.
 """
 
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -95,6 +96,19 @@ FILE_FORM_MUST_LOGIN = False
 # The tus upload endpoint keeps upload progress in the Django cache.
 FILE_FORM_CACHE = "default"
 FILE_FORM_CACHE_TIMEOUT = 3600 * 24
+
+# --- Optional: direct uploads to S3 (the /s3/ page) -----------------------
+# With an S3 upload dir set on the form, the browser uploads files straight to
+# the bucket (multipart, presigned URLs); Django only signs the requests. This
+# needs ``pip install -r requirements-s3.txt`` and the settings below, read by
+# django-file-form via django-storages. Leave the bucket name empty to turn the
+# page off. See the README for running against a local moto server.
+AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME", "")
+# Point at a local S3-compatible server; leave unset for AWS itself.
+AWS_S3_ENDPOINT_URL = os.environ.get("AWS_S3_ENDPOINT_URL") or None
+AWS_S3_REGION_NAME = os.environ.get("AWS_S3_REGION_NAME", "us-east-1")
+# Access keys come from AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY in the
+# environment; django-file-form looks them up there when not set here.
 
 CACHES = {
     "default": {
