@@ -1,0 +1,22 @@
+{% extends "uploads/base.html" %}
+
+{% block title %}S3 upload · django-file-form example{% endblock %}
+
+{% block content %}
+    <h1>Upload to S3</h1>
+    <p>
+        S3 uploads are turned off. To try them against a local
+        <a href="https://docs.getmoto.org/en/latest/docs/server_mode.html">moto</a>
+        server:
+    </p>
+    <pre><code>pip install -r requirements-s3.txt
+moto_server -p 9000
+
+# in another shell
+export AWS_STORAGE_BUCKET_NAME=example
+export AWS_S3_ENDPOINT_URL=http://127.0.0.1:9000
+export AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test
+python manage.py setup_s3_bucket
+python manage.py runserver</code></pre>
+    <p>See the README for details and for using a real bucket.</p>
+{% endblock %}

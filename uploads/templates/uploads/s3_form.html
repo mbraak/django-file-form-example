@@ -1,0 +1,46 @@
+{% extends "uploads/base.html" %}
+
+{% block title %}S3 upload · django-file-form example{% endblock %}
+
+{% block content %}
+    <h1>Upload to S3</h1>
+    <p>
+        The form sets <code>s3_upload_dir</code>, so the browser uploads each file
+        straight to the S3 bucket in parts, using URLs that Django signs at
+        <code>/s3upload/</code>. The file data never passes through Django.
+    </p>
+    {% include "uploads/_upload_form.html" with form_id="s3-form" submit_label="Upload" %}
+
+    <h2>Files in the bucket</h2>
+    {% if s3_error %}
+        <p class="errorlist">Could not list the bucket: {{ s3_error }}</p>
+        <p>Is <code>moto_server</code> running? Run <code>python manage.py setup_s3_bucket</code> after starting it.</p>
+    {% elif s3_files %}
+        <p>
+            Objects under <code>{{ s3_prefix }}</code>, newest first.
+            Download links are presigned by Django and valid for 5 minutes.
+        </p>
+        <table class="s3-files">
+            <thead><tr><th>File</th><th>Size</th><th>Uploaded</th></tr></thead>
+            <tbody>
+                {% for file in s3_files %}
+                    <tr>
+                        <td><a href="{{ file.url }}">{{ file.name }}</a></td>
+                        <td>{{ file.size|filesizeformat }}</td>
+                        <td>{{ file.last_modified|date:"Y-m-d H:i:s" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No files uploaded yet.</p>
+    {% endif %}
+{% endblock %}
+
+{% block head %}
+    <style>
+        .s3-files { border-collapse: collapse; width: 100%; }
+        .s3-files th, .s3-files td { text-align: left; padding: .25rem .5rem; border-bottom: 1px solid #ddd; }
+        .s3-files td:nth-child(2) { white-space: nowrap; }
+    </style>
+{% endblock %}

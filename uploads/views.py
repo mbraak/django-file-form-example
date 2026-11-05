@@ -1,9 +1,11 @@
 from django.contrib import messages
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, FormView, ListView
 
-from .forms import AccessibilityDemoForm, DocumentForm, SimpleUploadForm
+from .forms import AccessibilityDemoForm, DocumentForm, S3UploadForm, SimpleUploadForm
 from .models import Document
+from .s3 import list_uploaded_files, s3_uploads_enabled, upload_prefix
 
 
 class SimpleUploadView(FormView):
@@ -36,6 +38,42 @@ class DocumentListView(ListView):
 class DocumentDetailView(DetailView):
     model = Document
     template_name = "uploads/document_detail.html"
+
+
+class S3UploadView(FormView):
+    template_name = "uploads/s3_form.html"
+    form_class = S3UploadForm
+    success_url = reverse_lazy("s3_demo")
+
+    def dispatch(self, request, *args, **kwargs):
+        if not s3_uploads_enabled():
+            # Explain how to turn the demo on instead of failing on upload.
+            return render(request, "uploads/s3_disabled.html")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        # botocore is an optional dependency; dispatch() has already checked it.
+        from botocore.exceptions import BotoCoreError, ClientError
+
+        context = super().get_context_data(**kwargs)
+        context["s3_prefix"] = upload_prefix(S3UploadForm.s3_upload_dir)
+        try:
+            context["s3_files"] = list_uploaded_files(S3UploadForm.s3_upload_dir)
+        except (BotoCoreError, ClientError) as error:
+            # E.g. moto_server is not running or the bucket does not exist yet.
+            context["s3_error"] = str(error)
+        return context
+
+    def form_valid(self, form):
+        summary = form.save()
+        files = ", ".join(
+            f"{f['name']} ({f['size']} bytes, s3 key {f['key']})"
+            for f in summary["files"]
+        )
+        messages.success(
+            self.request, f"Received '{summary['description']}' with files: {files}"
+        )
+        return super().form_valid(form)
 
 
 class AccessibilityDemoView(FormView):
