@@ -4,15 +4,15 @@
 
 {% block head %}
     <style>
-        .sr-view { margin-top: 2rem; border: 1px solid #ccc; border-radius: 4px; padding: .5rem .75rem; }
+        .sr-view { margin-top: 2rem; border: 1px solid var(--border); border-radius: 4px; padding: .5rem .75rem; }
         .sr-view h2 { font-size: 1rem; margin: 0 0 .5rem; }
         .sr-log { list-style: none; margin: 0; padding: 0; max-height: 20rem; overflow-y: auto; font: .85rem/1.4 ui-monospace, monospace; }
-        .sr-log li { padding: .25rem 0; border-top: 1px solid #eee; }
+        .sr-log li { padding: .25rem 0; border-top: 1px solid var(--border-subtle); }
         .sr-kind { display: inline-block; min-width: 5.5em; font-weight: 600; }
-        .sr-kind-focus { color: #1a5fb4; }
-        .sr-kind-status { color: #26722e; }
-        .sr-kind-alert { color: #b00020; }
-        .sr-detail { display: block; margin-left: 5.5em; color: #555; }
+        .sr-kind-focus { color: var(--accent); }
+        .sr-kind-status { color: var(--success); }
+        .sr-kind-alert { color: var(--error); }
+        .sr-detail { display: block; margin-left: 5.5em; color: var(--muted); }
     </style>
 {% endblock %}
 
