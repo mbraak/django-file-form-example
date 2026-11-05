@@ -1,6 +1,11 @@
 from django.core.management.base import BaseCommand, CommandError
 
-from uploads.s3 import DEFAULT_CORS_ORIGINS, cors_configuration, s3_uploads_enabled
+from uploads.s3 import (
+    DEFAULT_CORS_ORIGINS,
+    cors_configuration,
+    get_s3_client,
+    s3_uploads_enabled,
+)
 
 
 class Command(BaseCommand):
@@ -28,10 +33,8 @@ class Command(BaseCommand):
             )
 
         from django.conf import settings
-        from django_file_form.s3_multipart.utils import get_bucket_name, get_client
 
-        client = get_client()
-        bucket = get_bucket_name()
+        client, bucket = get_s3_client()
         existing = {b["Name"] for b in client.list_buckets().get("Buckets", [])}
 
         if bucket in existing:
