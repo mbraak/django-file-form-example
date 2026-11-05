@@ -7,15 +7,49 @@
     {# django-file-form assets, served by the staticfiles app #}
     <link rel="stylesheet" href="{% static 'file_form/file_form.css' %}">
     <script src="{% static 'file_form/file_form.js' %}"></script>
+    <meta name="color-scheme" content="light dark">
+    <script>
+        // Apply the saved theme before the page renders, to avoid a flash
+        try {
+            const theme = localStorage.getItem("theme");
+            if (theme === "light" || theme === "dark") {
+                document.documentElement.dataset.theme = theme;
+            }
+        } catch (e) {}
+    </script>
     <style>
-        body { font-family: system-ui, sans-serif; max-width: 42rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
-        nav a { margin-right: 1rem; }
+        /* light-dark() picks a value based on color-scheme, which the theme toggle sets */
+        :root {
+            color-scheme: light dark;
+            --bg: light-dark(#fff, #1b1b1d);
+            --text: light-dark(#1f1f1f, #e6e6e6);
+            --muted: light-dark(#666, #a0a0a0);
+            --border: light-dark(#ddd, #444);
+            --border-subtle: light-dark(#eee, #333);
+            --error: light-dark(#b00020, #ff8a80);
+            --success: light-dark(#26722e, #81c995);
+            --accent: light-dark(#1a5fb4, #8ab4f8);
+            --message-bg: light-dark(#e6f4ea, #1e3a27);
+            --message-border: light-dark(#b7dfc2, #2f5c3c);
+        }
+        :root[data-theme="light"] { color-scheme: light; }
+        :root[data-theme="dark"] { color-scheme: dark; }
+        body { font-family: system-ui, sans-serif; max-width: 42rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; background: var(--bg); color: var(--text); }
+        nav { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem 1rem; }
+        .theme-toggle { margin-left: auto; font-weight: normal; }
+        .theme-toggle label { display: inline; font-weight: normal; margin: 0; }
         .messages { list-style: none; padding: 0; }
-        .messages li { background: #e6f4ea; border: 1px solid #b7dfc2; padding: .5rem .75rem; border-radius: 4px; }
-        .errorlist { color: #b00020; }
+        .messages li { background: var(--message-bg); border: 1px solid var(--message-border); padding: .5rem .75rem; border-radius: 4px; }
+        .errorlist { color: var(--error); }
         label { display: block; font-weight: 600; margin-top: 1rem; }
-        .helptext { display: block; color: #666; font-size: .9em; }
+        .helptext { display: block; color: var(--muted); font-size: .9em; }
         button[type="submit"] { margin-top: 1.5rem; padding: .5rem 1rem; }
+        /* django-file-form uses fixed colours; adapt them to the colour scheme */
+        .dff-uploader .dff-files { outline-color: var(--border); }
+        .dff-uploader .dff-files.dff-dropping { outline-color: var(--muted); }
+        .dff-uploader .dff-progress { background-color: var(--border); }
+        .dff-uploader .dff-progress .dff-progress-inner { background-color: var(--success); }
+        .dff-uploader .dff-error { color: var(--error); }
     </style>
     {% block head %}{% endblock %}
 </head>
@@ -27,7 +61,33 @@
         <a href="{% url 's3_demo' %}">S3 upload</a>
         <a href="{% url 'accessibility' %}">Accessibility</a>
         <a href="/admin/">Admin</a>
+        <span class="theme-toggle">
+            <label for="theme-select">Theme</label>
+            <select id="theme-select">
+                <option value="auto">System</option>
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+            </select>
+        </span>
     </nav>
+    <script>
+        (function () {
+            const select = document.getElementById("theme-select");
+            select.value = document.documentElement.dataset.theme || "auto";
+            select.addEventListener("change", function () {
+                const theme = select.value;
+                try {
+                    if (theme === "auto") {
+                        delete document.documentElement.dataset.theme;
+                        localStorage.removeItem("theme");
+                    } else {
+                        document.documentElement.dataset.theme = theme;
+                        localStorage.setItem("theme", theme);
+                    }
+                } catch (e) {}
+            });
+        })();
+    </script>
 
     {% if messages %}
         <ul class="messages">
