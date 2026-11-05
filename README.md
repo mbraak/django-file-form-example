@@ -22,7 +22,7 @@ Then open <http://127.0.0.1:8000/>.
 | `/`               | List of saved documents                                      |
 | `/accessibility/` | Demo of the keyboard and screen reader support               |
 | `/s3/`            | Direct browser-to-S3 uploads (optional, see below)           |
-| `/admin/`         | Django admin (`manage.py createsuperuser` first)             |
+| `/admin/`         | Django admin (no login needed while `DEBUG` is on)           |
 
 Run the tests with `python manage.py test`. The S3 tests are skipped unless
 `requirements-s3.txt` is installed.
