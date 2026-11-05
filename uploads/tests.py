@@ -158,3 +158,16 @@ class TusFlowTests(TestCase):
             follow=True,
         )
         self.assertContains(response, "Received files: a.txt, b.txt")
+
+
+class DebugAdminLoginTests(TestCase):
+    @override_settings(DEBUG=True)
+    def test_admin_needs_no_login_in_debug(self):
+        response = self.client.get("/admin/")
+        self.assertEqual(response.status_code, 200)
+
+    @override_settings(DEBUG=False)
+    def test_admin_requires_login_without_debug(self):
+        response = self.client.get("/admin/")
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/admin/login/", response["Location"])

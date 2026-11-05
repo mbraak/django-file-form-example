@@ -41,6 +41,10 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+if DEBUG:
+    # Logs /admin/ visitors in as a superuser, so the admin needs no password.
+    MIDDLEWARE.append("uploads.middleware.DebugAdminLoginMiddleware")
+
 ROOT_URLCONF = "example_project.urls"
 
 TEMPLATES = [
